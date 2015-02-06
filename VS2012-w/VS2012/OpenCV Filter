@@ -1,0 +1,445 @@
+#pragma once
+
+//OpenCV
+#include "stdafx.h"
+#include "opencv2\core\core.hpp"
+#include "opencv2\highgui\highgui.hpp"
+#include "opencv2\imgproc\imgproc.hpp"
+namespace WindowsFormsApplication3 {
+
+	using namespace System;
+	using namespace System::ComponentModel;
+	using namespace System::Collections;
+	using namespace System::Windows::Forms;
+	using namespace System::Data;
+	using namespace System::Drawing;
+
+	using namespace cv;
+
+	const cv::Size frameSize(640, 480);
+	cv::Point Coord;
+	cv::Mat frame;
+	cv::Mat hsv;
+	cv::Mat gray(frameSize,  CV_8UC1);
+	cv::Mat gray2(frameSize,  CV_8UC3);
+	cv::Mat twoway;
+	cv::Mat twoway2;
+	cv::Mat ero;
+	cv::Mat dil;
+	cv::Point centerpoint;
+	int temp=0 , i =0;
+	int a,b,c,d,g,f;
+	
+
+
+	unsigned int x,y;
+
+				VideoCapture cap(0); // open the default camera
+	
+				
+
+				Mat MatOri(frameSize,  CV_8UC3); // 宣告影像記憶空間
+
+	/// <summary>
+	/// Form1 的摘要
+	/// </summary>
+	public ref class Form1 : public System::Windows::Forms::Form
+	{
+	public:
+		Form1(void)
+		{
+			InitializeComponent();
+			//
+			//TODO: 在此加入建構函式程式碼
+			//
+		}
+
+	protected:
+		/// <summary>
+		/// 清除任何使用中的資源。
+		/// </summary>
+		~Form1()
+		{
+			if (components)
+			{
+				delete components;
+			}
+		}
+	private: System::Windows::Forms::Button^  button1;
+	protected: 
+	private: System::Windows::Forms::Button^  button2;
+	private: System::Windows::Forms::Button^  button3;
+	private: System::Windows::Forms::Button^  button4;
+	private: System::Windows::Forms::Button^  button5;
+	private: System::Windows::Forms::Button^  button6;
+	private: System::Windows::Forms::HScrollBar^  hScrollBar1;
+	private: System::Windows::Forms::HScrollBar^  hScrollBar2;
+	private: System::Windows::Forms::HScrollBar^  hScrollBar3;
+	private: System::Windows::Forms::HScrollBar^  hScrollBar4;
+	private: System::Windows::Forms::HScrollBar^  hScrollBar5;
+	private: System::Windows::Forms::HScrollBar^  hScrollBar6;
+	private: System::Windows::Forms::Timer^  timer1;
+	private: System::Windows::Forms::PictureBox^  pictureBox1;
+	private: System::Windows::Forms::Label^  label1;
+	private: System::Windows::Forms::LinkLabel^  linkLabel1;
+
+	private: System::Windows::Forms::LinkLabel^  linkLabel3;
+	private: System::Windows::Forms::LinkLabel^  linkLabel4;
+	private: System::ComponentModel::IContainer^  components;
+
+	private:
+		/// <summary>
+		/// 設計工具所需的變數。
+		/// </summary>
+
+
+#pragma region Windows Form Designer generated code
+		/// <summary>
+		/// 此為設計工具支援所需的方法 - 請勿使用程式碼編輯器
+		/// 修改這個方法的內容。
+		/// </summary>
+		void InitializeComponent(void)
+		{
+			this->components = (gcnew System::ComponentModel::Container());
+			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->button3 = (gcnew System::Windows::Forms::Button());
+			this->button4 = (gcnew System::Windows::Forms::Button());
+			this->button5 = (gcnew System::Windows::Forms::Button());
+			this->button6 = (gcnew System::Windows::Forms::Button());
+			this->hScrollBar1 = (gcnew System::Windows::Forms::HScrollBar());
+			this->hScrollBar2 = (gcnew System::Windows::Forms::HScrollBar());
+			this->hScrollBar3 = (gcnew System::Windows::Forms::HScrollBar());
+			this->hScrollBar4 = (gcnew System::Windows::Forms::HScrollBar());
+			this->hScrollBar5 = (gcnew System::Windows::Forms::HScrollBar());
+			this->hScrollBar6 = (gcnew System::Windows::Forms::HScrollBar());
+			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
+			this->linkLabel3 = (gcnew System::Windows::Forms::LinkLabel());
+			this->linkLabel4 = (gcnew System::Windows::Forms::LinkLabel());
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->BeginInit();
+			this->SuspendLayout();
+			// 
+			// button1
+			// 
+			this->button1->Location = System::Drawing::Point(813, 56);
+			this->button1->Name = L"button1";
+			this->button1->Size = System::Drawing::Size(75, 23);
+			this->button1->TabIndex = 0;
+			this->button1->Text = L"HSV";
+			this->button1->UseVisualStyleBackColor = true;
+			this->button1->Click += gcnew System::EventHandler(this, &Form1::button1_Click);
+			// 
+			// button2
+			// 
+			this->button2->Location = System::Drawing::Point(813, 130);
+			this->button2->Name = L"button2";
+			this->button2->Size = System::Drawing::Size(75, 23);
+			this->button2->TabIndex = 1;
+			this->button2->Text = L"Binary";
+			this->button2->UseVisualStyleBackColor = true;
+			this->button2->Click += gcnew System::EventHandler(this, &Form1::button2_Click);
+			// 
+			// button3
+			// 
+			this->button3->Location = System::Drawing::Point(813, 200);
+			this->button3->Name = L"button3";
+			this->button3->Size = System::Drawing::Size(75, 23);
+			this->button3->TabIndex = 2;
+			this->button3->Text = L"Filter";
+			this->button3->UseVisualStyleBackColor = true;
+			this->button3->Click += gcnew System::EventHandler(this, &Form1::button3_Click);
+			// 
+			// button4
+			// 
+			this->button4->Location = System::Drawing::Point(813, 280);
+			this->button4->Name = L"button4";
+			this->button4->Size = System::Drawing::Size(75, 23);
+			this->button4->TabIndex = 3;
+			this->button4->Text = L"Moment";
+			this->button4->UseVisualStyleBackColor = true;
+			this->button4->Click += gcnew System::EventHandler(this, &Form1::button4_Click);
+			// 
+			// button5
+			// 
+			this->button5->Location = System::Drawing::Point(813, 365);
+			this->button5->Name = L"button5";
+			this->button5->Size = System::Drawing::Size(75, 23);
+			this->button5->TabIndex = 4;
+			this->button5->Text = L"Original";
+			this->button5->UseVisualStyleBackColor = true;
+			this->button5->Click += gcnew System::EventHandler(this, &Form1::button5_Click);
+			// 
+			// button6
+			// 
+			this->button6->Location = System::Drawing::Point(813, 448);
+			this->button6->Name = L"button6";
+			this->button6->Size = System::Drawing::Size(75, 23);
+			this->button6->TabIndex = 5;
+			this->button6->Text = L"Stop";
+			this->button6->UseVisualStyleBackColor = true;
+			this->button6->Click += gcnew System::EventHandler(this, &Form1::button6_Click);
+			// 
+			// hScrollBar1
+			// 
+			this->hScrollBar1->Location = System::Drawing::Point(975, 66);
+			this->hScrollBar1->Maximum = 255;
+			this->hScrollBar1->Name = L"hScrollBar1";
+			this->hScrollBar1->Size = System::Drawing::Size(192, 17);
+			this->hScrollBar1->TabIndex = 6;
+			this->hScrollBar1->Scroll += gcnew System::Windows::Forms::ScrollEventHandler(this, &Form1::hScrollBar1_Scroll);
+			// 
+			// hScrollBar2
+			// 
+			this->hScrollBar2->Location = System::Drawing::Point(975, 130);
+			this->hScrollBar2->Maximum = 255;
+			this->hScrollBar2->Name = L"hScrollBar2";
+			this->hScrollBar2->Size = System::Drawing::Size(192, 17);
+			this->hScrollBar2->TabIndex = 7;
+			this->hScrollBar2->Value = 255;
+			this->hScrollBar2->Scroll += gcnew System::Windows::Forms::ScrollEventHandler(this, &Form1::hScrollBar2_Scroll);
+			// 
+			// hScrollBar3
+			// 
+			this->hScrollBar3->Location = System::Drawing::Point(975, 200);
+			this->hScrollBar3->Maximum = 255;
+			this->hScrollBar3->Name = L"hScrollBar3";
+			this->hScrollBar3->Size = System::Drawing::Size(192, 17);
+			this->hScrollBar3->TabIndex = 8;
+			this->hScrollBar3->Scroll += gcnew System::Windows::Forms::ScrollEventHandler(this, &Form1::hScrollBar3_Scroll);
+			// 
+			// hScrollBar4
+			// 
+			this->hScrollBar4->Location = System::Drawing::Point(975, 280);
+			this->hScrollBar4->Maximum = 255;
+			this->hScrollBar4->Name = L"hScrollBar4";
+			this->hScrollBar4->Size = System::Drawing::Size(192, 17);
+			this->hScrollBar4->TabIndex = 9;
+			this->hScrollBar4->Value = 255;
+			this->hScrollBar4->Scroll += gcnew System::Windows::Forms::ScrollEventHandler(this, &Form1::hScrollBar4_Scroll);
+			// 
+			// hScrollBar5
+			// 
+			this->hScrollBar5->Location = System::Drawing::Point(975, 365);
+			this->hScrollBar5->Maximum = 255;
+			this->hScrollBar5->Name = L"hScrollBar5";
+			this->hScrollBar5->Size = System::Drawing::Size(192, 17);
+			this->hScrollBar5->TabIndex = 10;
+			this->hScrollBar5->Scroll += gcnew System::Windows::Forms::ScrollEventHandler(this, &Form1::hScrollBar5_Scroll);
+			// 
+			// hScrollBar6
+			// 
+			this->hScrollBar6->Location = System::Drawing::Point(975, 448);
+			this->hScrollBar6->Maximum = 255;
+			this->hScrollBar6->Name = L"hScrollBar6";
+			this->hScrollBar6->Size = System::Drawing::Size(192, 17);
+			this->hScrollBar6->TabIndex = 11;
+			this->hScrollBar6->Value = 255;
+			this->hScrollBar6->Scroll += gcnew System::Windows::Forms::ScrollEventHandler(this, &Form1::hScrollBar6_Scroll);
+			// 
+			// timer1
+			// 
+			this->timer1->Tick += gcnew System::EventHandler(this, &Form1::timer1_Tick);
+			// 
+			// pictureBox1
+			// 
+			this->pictureBox1->Location = System::Drawing::Point(74, 31);
+			this->pictureBox1->Name = L"pictureBox1";
+			this->pictureBox1->Size = System::Drawing::Size(640, 480);
+			this->pictureBox1->TabIndex = 12;
+			this->pictureBox1->TabStop = false;
+			this->pictureBox1->Click += gcnew System::EventHandler(this, &Form1::pictureBox1_Click);
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Location = System::Drawing::Point(813, 521);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(33, 12);
+			this->label1->TabIndex = 13;
+			this->label1->Text = L"label1";
+			this->label1->Click += gcnew System::EventHandler(this, &Form1::label1_Click);
+			// 
+			// linkLabel1
+			// 
+			this->linkLabel1->AutoSize = true;
+			this->linkLabel1->Font = (gcnew System::Drawing::Font(L"新細明體", 15));
+			this->linkLabel1->Location = System::Drawing::Point(1065, 31);
+			this->linkLabel1->Name = L"linkLabel1";
+			this->linkLabel1->Size = System::Drawing::Size(23, 20);
+			this->linkLabel1->TabIndex = 14;
+			this->linkLabel1->TabStop = true;
+			this->linkLabel1->Text = L"H";
+			// 
+			// linkLabel3
+			// 
+			this->linkLabel3->AutoSize = true;
+			this->linkLabel3->Font = (gcnew System::Drawing::Font(L"新細明體", 15));
+			this->linkLabel3->Location = System::Drawing::Point(1069, 168);
+			this->linkLabel3->Name = L"linkLabel3";
+			this->linkLabel3->Size = System::Drawing::Size(19, 20);
+			this->linkLabel3->TabIndex = 16;
+			this->linkLabel3->TabStop = true;
+			this->linkLabel3->Text = L"S";
+			// 
+			// linkLabel4
+			// 
+			this->linkLabel4->AutoSize = true;
+			this->linkLabel4->Font = (gcnew System::Drawing::Font(L"新細明體", 15));
+			this->linkLabel4->Location = System::Drawing::Point(1069, 323);
+			this->linkLabel4->Name = L"linkLabel4";
+			this->linkLabel4->Size = System::Drawing::Size(23, 20);
+			this->linkLabel4->TabIndex = 17;
+			this->linkLabel4->TabStop = true;
+			this->linkLabel4->Text = L"V";
+			// 
+			// Form1
+			// 
+			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
+			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->ClientSize = System::Drawing::Size(1198, 564);
+			this->Controls->Add(this->linkLabel4);
+			this->Controls->Add(this->linkLabel3);
+			this->Controls->Add(this->linkLabel1);
+			this->Controls->Add(this->label1);
+			this->Controls->Add(this->pictureBox1);
+			this->Controls->Add(this->hScrollBar6);
+			this->Controls->Add(this->hScrollBar5);
+			this->Controls->Add(this->hScrollBar4);
+			this->Controls->Add(this->hScrollBar3);
+			this->Controls->Add(this->hScrollBar2);
+			this->Controls->Add(this->hScrollBar1);
+			this->Controls->Add(this->button6);
+			this->Controls->Add(this->button5);
+			this->Controls->Add(this->button4);
+			this->Controls->Add(this->button3);
+			this->Controls->Add(this->button2);
+			this->Controls->Add(this->button1);
+			this->Name = L"Form1";
+			this->Text = L"Form1";
+			this->Load += gcnew System::EventHandler(this, &Form1::Form1_Load);
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->EndInit();
+			this->ResumeLayout(false);
+			this->PerformLayout();
+
+		}
+#pragma endregion
+	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
+			temp=2;
+			 }
+private: System::Void button3_Click(System::Object^  sender, System::EventArgs^  e) {
+			temp=4;
+		 }
+private: System::Void Form1_Load(System::Object^  sender, System::EventArgs^  e) {
+			 timer1->Interval = 1;
+			 timer1->Enabled = true;
+			 temp=1;
+			
+				
+		 }
+private: System::Void button5_Click(System::Object^  sender, System::EventArgs^  e) {
+			 temp=1;
+		 }
+
+private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
+			
+			// get a new frame from camera
+			cap >> frame;
+			cvtColor(frame,hsv,CV_BGR2HSV);
+			cvtColor(hsv,gray,CV_BGR2GRAY);
+			inRange(hsv,cv::Scalar(a,b,c),cv::Scalar(d,g,f),twoway);
+			//cv::threshold(gray, twoway, 100, 255, CV_THRESH_BINARY); 
+			cvtColor(gray,gray2,CV_GRAY2BGR);
+			erode(twoway,ero,Mat(cv::Size(1, 1), CV_8UC1));
+		    dilate(ero,dil,Mat(cv::Size(1, 1), CV_8UC1));
+			
+			
+			
+			if(temp==1)
+			{
+			Bitmap^ bmp = gcnew Bitmap(640,480,frame.step,System::Drawing::Imaging::PixelFormat::Format24bppRgb,IntPtr(frame.data));
+			pictureBox1->Image = bmp;
+			i = 1;
+			}
+			else if(temp==2)
+			{
+			Bitmap^ bmp2 = gcnew Bitmap(640,480,hsv.step,System::Drawing::Imaging::PixelFormat::Format24bppRgb,IntPtr(hsv.data));
+			pictureBox1->Image = bmp2;
+			i = 2;
+			}
+			else if(temp==3)
+			{
+			Bitmap^ bmp3 = gcnew Bitmap(640,480,gray2.step,System::Drawing::Imaging::PixelFormat::Format24bppRgb,IntPtr(gray2.data));
+			pictureBox1->Image = bmp3;
+			i = 3;
+			}
+			else if(temp==4)
+			{
+			Bitmap^ bmp4 = gcnew Bitmap(640,480,twoway.step,System::Drawing::Imaging::PixelFormat::Format8bppIndexed,IntPtr(twoway.data));
+			pictureBox1->Image = bmp4;
+			i = 4;
+			}
+			else if(temp==5)
+			{
+			Coord=  第三關(dil);
+			circle(frame,Coord,1,CV_RGB(255,0,0),5,8,0) ;
+			Bitmap^ bmp5 = gcnew Bitmap(640,480,frame.step,System::Drawing::Imaging::PixelFormat::Format24bppRgb,IntPtr(frame.data));
+			pictureBox1->Image = bmp5;
+			i = 4;
+			
+			}
+			label1->Text = Convert::ToString( i );
+		 }
+
+private: System::Void pictureBox1_Click(System::Object^  sender, System::EventArgs^  e) {
+
+		 }
+private: System::Void button6_Click(System::Object^  sender, System::EventArgs^  e) {
+			cvDestroyWindow("WinOri"); // 銷毀視窗
+			MatOri.release(); //歸還影像記憶空間
+			cap.release(); // 關閉攝影機
+			Close();
+		 }
+private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
+			 temp=3;
+		 }
+private: System::Void label1_Click(System::Object^  sender, System::EventArgs^  e) {
+		 }
+private: System::Void button4_Click(System::Object^  sender, System::EventArgs^  e) {
+			 temp=5;
+		 }
+private: cv::Point 第三關(cv::Mat img)
+		 {
+			
+			cv::Moments mm = cv::moments(img,false);
+			double moment10 = mm.m10;
+			double moment01 = mm.m01;
+			double moment00 = mm.m00;
+			Coord.x = int(moment10 / moment00);
+			Coord.y = int(moment01 / moment00);
+			return Coord;
+		 }
+private: System::Void hScrollBar1_Scroll(System::Object^  sender, System::Windows::Forms::ScrollEventArgs^  e) {
+			a= hScrollBar1->Value;
+		 }
+private: System::Void hScrollBar2_Scroll(System::Object^  sender, System::Windows::Forms::ScrollEventArgs^  e) {
+			 d= hScrollBar2->Value;
+		 }
+private: System::Void hScrollBar3_Scroll(System::Object^  sender, System::Windows::Forms::ScrollEventArgs^  e) {
+			 b= hScrollBar3->Value;
+		 }
+private: System::Void hScrollBar4_Scroll(System::Object^  sender, System::Windows::Forms::ScrollEventArgs^  e) {
+			 g= hScrollBar4->Value;
+		 }
+
+private: System::Void hScrollBar5_Scroll(System::Object^  sender, System::Windows::Forms::ScrollEventArgs^  e) {
+			 c= hScrollBar5->Value;
+		 }
+private: System::Void hScrollBar6_Scroll(System::Object^  sender, System::Windows::Forms::ScrollEventArgs^  e) {
+			 f= hScrollBar6->Value;
+		 }
+};
+}
+
